@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 const aggregatePaginate = require('mongoose-aggregate-paginate-v2');
 
 // Create Schema
-const customerSchema = new Schema({
+const accountInfo = new Schema({
     CustomerId: {
         type: Number,
         required: true,
@@ -42,6 +42,6 @@ const customerSchema = new Schema({
     timestamps: true
 })
 
-customerSchema.plugin(aggregatePaginate);
-const CustomerModel = mongoose.model('customers', customerSchema)
-module.exports = CustomerModel
+accountInfo.plugin(aggregatePaginate);
+const AccountInfo = mongoose.model('customers', accountInfo)
+module.exports = AccountInfo
