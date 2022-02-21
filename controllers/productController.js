@@ -1,4 +1,5 @@
 const { pageConfig, responseSuccess } = require("../common/app");
+const AttributeModel = require("../models/attribute");
 const ProductModel = require("../models/product");
 const { converterServerToRealPath } = require("../utils/fileUpload");
 
@@ -136,7 +137,11 @@ const getDetailProduct = async (req, res) => {
             },
         },
     ]);
-    return responseSuccess(res, 200, "", product);
+    if (product.length > 0) {
+        return responseSuccess(res, 200, "", product[0]);
+    } else {
+        return responseSuccess(res, 301, "", "Product not found");
+    }
 }
 
 // create product
@@ -191,10 +196,95 @@ const deleteProduct = async (req, res) => {
     return responseSuccess(res, 301, "", "Product not found");
 }
 
+// get attributes of product
+const getAttributes = async (req, res) => {
+    const { productId } = req.params;
+
+    const attributes = await AttributeModel.aggregate([
+        {
+            $match: {
+                ProductId: parseInt(productId),
+            },
+        },
+        {
+            $project: {
+                AttributeId: 1,
+                AttributeName: 1,
+                AttributeDescription: 1,
+                AttributeImage: 1,
+            },
+        },
+    ]);
+    return responseSuccess(res, 200, "", attributes);
+}
+
+// create attribute
+const createAttribute = async (req, res) => {
+    const { productId } = req.params;
+    const { attributeName, attributeDescription } = req.value.body;
+    if (req.file) {
+        const maxAttribute = await AttributeModel.find({}).sort({ AttributeId: -1 }).limit(1)
+        const attribute = await AttributeModel.create({
+            AttributeId: maxAttribute !== null && maxAttribute.length > 0 ? maxAttribute[0].AttributeId + 1 : 1,
+            ProductId: parseInt(productId),
+            AttributeName: attributeName,
+            AttributeDescription: attributeDescription,
+            AttributeImage: converterServerToRealPath(req.file.path),
+        });
+        return responseSuccess(res, 200, "", attribute);
+    } else {
+        return responseSuccess(res, 301, "", "Please upload image");
+    }
+}
+
+// update attribute
+const updateAttribute = async (req, res) => {
+    const { attributeId } = req.params;
+    const { attributeName, attributeDescription } = req.value.body;
+    const attribute = await AttributeModel.findOne({ AttributeId: parseInt(attributeId) });
+    if (attribute) {
+        if (req.file) {
+            attribute.AttributeImage = converterServerToRealPath(req.file.path);
+        }
+        attribute.AttributeName = attributeName;
+        attribute.AttributeDescription = attributeDescription;
+        await attribute.save();
+        return responseSuccess(res, 200, "", attribute);
+    }
+    return responseSuccess(res, 301, "", "Attribute not found");
+}
+
+// get attribute detail
+const getAttribute = async (req, res) => {
+    const { attributeId } = req.params;
+    const attribute = await AttributeModel.findOne({ AttributeId: parseInt(attributeId) });
+    if (attribute) {
+        return responseSuccess(res, 200, "", attribute);
+    }
+    return responseSuccess(res, 301, "", "Attribute not found");
+}
+
+// delete attribute
+const deleteAttribute = async (req, res) => {
+    const { attributeId } = req.params;
+    const attribute = await AttributeModel.findOne({ AttributeId: parseInt(attributeId) });
+    if (attribute) {
+        await attribute.remove();
+        return responseSuccess(res, 200, "", "Delete attribute success");
+    }
+    return responseSuccess(res, 301, "", "Attribute not found");
+}
+
+
 module.exports = {
     getAllProducts,
     getDetailProduct,
     createProduct,
     updateProduct,
     deleteProduct,
+    getAttributes,
+    createAttribute,
+    updateAttribute,
+    getAttribute,
+    deleteAttribute,
 }
