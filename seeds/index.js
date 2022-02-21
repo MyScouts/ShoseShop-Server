@@ -12,7 +12,7 @@ async function seedDB() {
         useNewUrlParser: true,
     })
     try {
-        // await categorySeed()
+        await categorySeed()
         // await productSeed()
         await attributeSeed()
     } catch (err) {

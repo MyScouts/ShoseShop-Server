@@ -37,6 +37,7 @@ const productSchema = new Schema({
 })
 
 productSchema.plugin(aggregatePaginate);
+productSchema.index({ ProductId: 1 }, { unique: true });
 const ProductModel = mongoose.model('products', productSchema)
 
 // Export module

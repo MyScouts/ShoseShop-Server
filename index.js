@@ -44,6 +44,6 @@ app.use((err, req, res, next) => {
 })
 
 // Start server
-app.listen(AppConfig.PORT, () => {
-    console.log(`Server is running on port ${AppConfig.PORT}`)
+app.listen(AppConfig.APP_PORT, () => {
+    console.log(`Server is running on port ${AppConfig.APP_PORT}`)
 })

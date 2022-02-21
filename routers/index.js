@@ -1,6 +1,7 @@
+const productRouter = require('./productRouter');
+
 const AppRouters = (app) => {
-
-
+    app.use('/api/product', productRouter);
 }
 
 
