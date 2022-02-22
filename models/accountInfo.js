@@ -4,25 +4,29 @@ const aggregatePaginate = require('mongoose-aggregate-paginate-v2');
 
 // Create Schema
 const accountInfo = new Schema({
-    CustomerId: {
+    AccountId: {
         type: Number,
         required: true,
         unique: true
     },
-    UserName: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    Password: {
+    // UserName: {
+    //     type: String,
+    //     required: true,
+    //     unique: true
+    // },
+    // Password: {
+    //     type: String,
+    //     required: true
+    // },
+    // FirstName: {
+    //     type: String,
+    // },
+    // LastName: {
+    //     type: String,
+    // },
+    FullName: {
         type: String,
         required: true
-    },
-    FirstName: {
-        type: String,
-    },
-    LastName: {
-        type: String,
     },
     Email: {
         type: String,
@@ -34,12 +38,24 @@ const accountInfo = new Schema({
     Address: {
         type: String,
     },
-    RoleId: {
+    Sex: {
         type: Number,
-        required: true
-    }
+        required: true,
+        enum: [0, 1, 2] // 0: Nữ, 1: Name, 2: không xác định
+    },
 }, {
-    timestamps: true
+    timestamps: true,
+
+    toJSON: {
+        getters: true,
+        transform: (doc, ret) => {
+            ret.createdAt = ret.createdAt ? ret.createdAt.toISOString() : null
+            ret.updatedAt = ret.updatedAt ? ret.updatedAt.toISOString() : null
+            delete ret.__v
+            delete ret.logical_delete
+            return ret;
+        },
+    }
 })
 
 accountInfo.plugin(aggregatePaginate);

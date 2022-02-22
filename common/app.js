@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 const APP_PORT = process.env.SERVER_PORT || 5000
+const PASSPORT_SECRET = process.env.PASSPORT_SECRET || 'secret'
 
 const CUSTOM_LABELS = {
     totalDocs: 'itemCount',
@@ -39,5 +40,6 @@ module.exports = {
     APP_PORT,
     pageConfig,
     responseSuccess,
-    responseFail
+    responseFail,
+    PASSPORT_SECRET
 }
