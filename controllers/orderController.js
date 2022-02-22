@@ -8,13 +8,11 @@ const newOrder = async (req, res) => {
     const { customerName, customerPhone, items, shipToAddress } = req.value.body
 
     const productIds = items.map(item => item.productId)
-
     const products = await ProductModel.find({ ProductId: { $in: productIds } })
-
     if (products.length !== productIds.length) return responseSuccess(res, 301, "Invalid productIds");
 
-    const lastOrder = await OrderModel.findOne({}, {}, { sort: { 'OrderId': -1 } }).limit(1)
-
+    const lastOrder = await OrderModel.find({}).sort({ OrderId: -1 }).limit(1)
+    
     const newOrder = await OrderModel.create({
         OrderId: lastOrder ? lastOrder.OrderId + 1 : 1,
         CustomerId: accountId,
