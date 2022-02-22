@@ -1,7 +1,7 @@
 const router = require('express-promise-router')()
-const customerController = require('../controllers/customerController')
 const passport = require('passport')
 const passportSetup = require('../middlewares/passport')
+const customerController = require('../controllers/customerController')
 const isCustomer = require('../middlewares/isCustomer')
 
 

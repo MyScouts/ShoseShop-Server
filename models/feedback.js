@@ -12,7 +12,6 @@ const feedbackSchema = new Schema({
         type: Number,
         required: true,
     },
-
     FeedbackName: {
         type: String,
     },

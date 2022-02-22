@@ -12,9 +12,9 @@ async function seedDB() {
         useNewUrlParser: true,
     })
     try {
-        // await categorySeed()
-        // await productSeed()
-        // await attributeSeed()
+        await categorySeed()
+        await productSeed()
+        await attributeSeed()
         await roleSeed()
     } catch (err) {
         console.log(err.stack);

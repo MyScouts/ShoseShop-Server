@@ -44,6 +44,21 @@ const authSchemas = {
         }),
         sex: Joi.number().required().valid(0, 1, 2)
     }),
+
+    updatePassword: Joi.object().keys({
+        password: Joi.string().min(8).required().messages({
+            'string.empty': 'Password is required',
+            'string.required': 'Password is required',
+        }),
+        newPassword: Joi.string().min(8).required().messages({
+            'string.empty': 'Password is required',
+            'string.required': 'Password is required',
+        }),
+        passwordConfirm: Joi.string().min(8).valid(Joi.ref('newPassword')).required().messages({
+            'string.empty': 'PasswordConfirm is required',
+            'string.required': 'PasswordConfirm is required',
+        }),
+    })
 }
 
 // Export module
