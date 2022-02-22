@@ -23,9 +23,7 @@ const orderDetailSchema = new Schema({
     timestamps: true
 })
 
-orderDetailSchema.index({ OrderDetailId: 1 }, { unique: true });
 orderDetailSchema.plugin(aggregatePaginate);
-
 const OrderDetailModel = mongoose.model('orderDetails', orderDetailSchema)
 // Export Module/Schema
 module.exports = OrderDetailModel

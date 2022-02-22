@@ -26,9 +26,6 @@ const getAllProducts = async (req, res) => {
                 from: "categories",
                 localField: "CategoryId",
                 foreignField: "CategoryId",
-                pipeline: [
-                    { $match: condictionCategory }
-                ],
                 as: "category",
             },
         }, {
