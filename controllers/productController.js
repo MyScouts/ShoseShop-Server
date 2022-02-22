@@ -83,7 +83,7 @@ const getDetailProduct = async (req, res) => {
     const product = await ProductModel.aggregate([
         {
             $match: {
-                ProductId: parseInt(productId),
+                ProductId: parseInt(productId), 
             },
         },
         {
