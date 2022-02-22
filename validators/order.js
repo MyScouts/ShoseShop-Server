@@ -20,6 +20,13 @@ const orderSchemas = {
             'array.items.required': 'Items are required'
         }),
     }),
+
+    updateOrderStatus: Joi.object().keys({
+        status: Joi.number().integer().valid(0, 1, 2, 3).required().messages({
+            'number.integer': 'Status must be an integer',
+            'number.valid': 'Status must be 0, 1, 2 or 3'
+        }),
+    }),
 }
 
 module.exports = orderSchemas

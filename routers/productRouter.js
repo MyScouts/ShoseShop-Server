@@ -18,6 +18,13 @@ router.route('/get-all')
         productController.getAllProducts
     )
 
+router.route('/best-selling')
+    .get(
+        validatorQuery(baseSchema.page, "page"),
+        validatorQuery(baseSchema.pageSize, "pageSize"),
+        productController.getBestSellingProducts
+    )
+
 router.route('/')
     .post(
         passport.authenticate('jwt', { session: false }),
@@ -77,6 +84,7 @@ router.route('/category/:categoryId')
         validatorQuery(baseSchema.pageSize, "pageSize"),
         productController.getProductsByCategory
     )
+
 
 // Export module
 module.exports = router

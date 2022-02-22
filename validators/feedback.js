@@ -10,7 +10,7 @@ const feedbackSchemas = {
             'string.empty': 'feedbackDescription is required',
             'string.required': 'feedbackDescription is required',
         }),
-        grade: Joi.number().required().messages({
+        grade: Joi.number().required().max(10).messages({
             'number.empty': 'Grade is required',
             'number.required': 'Grade is required',
         }),
