@@ -21,6 +21,8 @@ const feedbackSchema = new Schema({
     Grade: {
         type: Number,
     }
+},{
+    timestamps: true
 })
 
 feedbackSchema.plugin(aggregatePaginate);

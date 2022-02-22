@@ -20,7 +20,7 @@ const orderSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    status: {
+    Status: {
         type: Number,
         default: 0,
         // 0: Đang chờ xử lý
