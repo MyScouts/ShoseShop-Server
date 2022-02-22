@@ -71,5 +71,12 @@ router.route('/:productId/attributes/:attributeId')
         productController.deleteAttribute
     )
 
+router.route('/category/:categoryId')
+    .get(
+        validatorQuery(baseSchema.page, "page"),
+        validatorQuery(baseSchema.pageSize, "pageSize"),
+        productController.getProductsByCategory
+    )
+
 // Export module
 module.exports = router

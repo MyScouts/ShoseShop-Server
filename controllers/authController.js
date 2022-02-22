@@ -24,9 +24,7 @@ const managerLogin = async (req, res) => {
     const { userName, password } = req.value.body;
 
     const findAccount = await AccountModel.findOne({ UserName: `${userName}`.toLowerCase() });
-    console.log("🚀 ~ file: authController.js ~ line 28 ~ managerLogin ~ findAccount", findAccount)
-
-    if (findAccount.RoleId !== 1) return responseSuccess(res, 302, "Account is not manager");
+    if (findAccount.RoleId !== 1) return responseSuccess(res, 301, "Account is not manager");
 
     const isMatch = await findAccount.comparePassword(password);
     if (!isMatch) return responseSuccess(res, 302, "Password is not match");
@@ -79,10 +77,28 @@ const customerLogin = async (req, res) => {
     return responseSuccess(res, 200, "Login successfully!", { token, account: findAccount });
 }
 
+const updatePassword = async (req, res) => {
+    const { password, passwordConfirm, newPassword } = req.value.body;
+    const { accountId } = req.user.AccountId;
+
+    if (newPassword !== passwordConfirm) return responseSuccess(res, 301, "new password and password Confirm is not match");
+
+    const account = await AccountModel.findOne({ AccountId: accountId });
+
+    if (!account) return responseSuccess(res, 302, "Account is not existed");
+
+    const isMatch = await account.comparePassword(password);
+    if (!isMatch) return responseSuccess(res, 303, "Password is not match");
+
+    account.Password = await convertStringToHash(newPassword);
+    await account.save();
+    return responseSuccess(res, 200, "Update password successfully!")
+}
 
 module.exports = {
     managerCreate,
     registerCustomer,
     managerLogin,
-    customerLogin
+    customerLogin,
+    updatePassword
 }
