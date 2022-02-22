@@ -3,11 +3,6 @@ const Schema = mongoose.Schema
 const aggregatePaginate = require('mongoose-aggregate-paginate-v2');
 
 const orderDetailSchema = new Schema({
-    OrderDetailId: {
-        type: Number,
-        required: true,
-        unique: true
-    },
     OrderId: {
         type: Number,
         required: true,

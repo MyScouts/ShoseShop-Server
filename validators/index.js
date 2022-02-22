@@ -1,8 +1,8 @@
-let Joi = require('@hapi/joi')
+const Joi = require('@hapi/joi')
 
-let validatorBody = (schema) => {
+const validatorBody = (schema) => {
     return (req, res, next) => {
-        let validatorResult = schema.validate(req.body)
+        const validatorResult = schema.validate(req.body)
         console.log(validatorResult)
         if (validatorResult.error) {
             return res.status(400).json(validatorResult.error.details[0].message)
@@ -16,9 +16,9 @@ let validatorBody = (schema) => {
     }
 }
 
-let validatiorParams = (schema, name) => {
+const validatiorParams = (schema, name) => {
     return (req, res, next) => {
-        let validatorResult = schema.validate({ params: req.params[name] })
+        const validatorResult = schema.validate({ params: req.params[name] })
         if (validatorResult.error) {
             return res.status(400).json(validatorResult.error.details[0].message)
         } else {
@@ -30,9 +30,9 @@ let validatiorParams = (schema, name) => {
     }
 }
 
-let validatorQuery = (schema, name) => {
+const validatorQuery = (schema, name) => {
     return (req, res, next) => {
-        let validatorResult = schema.validate({ query: req.query[name] })
+        const validatorResult = schema.validate({ query: req.query[name] })
         if (validatorResult.error) {
             return res.status(400).json(validatorResult.error.details[0].message)
         } else {
@@ -44,7 +44,7 @@ let validatorQuery = (schema, name) => {
         }
     }
 }
-let baseSchema = {
+const baseSchema = {
     idSchema: Joi.object().keys({
         params: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
     }),
