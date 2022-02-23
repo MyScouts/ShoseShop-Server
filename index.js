@@ -6,7 +6,6 @@ const AppConfig = require('./common/app')
 const DBConnection = require('./common/database')
 const AppRouters = require('./routers')
 const corsOptions = {
-    origin: 'http://localhost:3000',
     credentials: true,
     optionSuccessStatus: 200
 }
