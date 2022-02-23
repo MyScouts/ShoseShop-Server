@@ -95,6 +95,7 @@ const updatePassword = async (req, res) => {
     return responseSuccess(res, 200, "Update password successfully!")
 }
 
+
 module.exports = {
     managerCreate,
     registerCustomer,

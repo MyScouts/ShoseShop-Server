@@ -37,12 +37,6 @@ const getAllProducts = async (req, res) => {
             },
         },
         {
-            $unwind: {
-                path: "$category",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-        {
             $match: condition,
         },
         {
@@ -96,18 +90,6 @@ const getDetailProduct = async (req, res) => {
                 localField: "ProductId",
                 foreignField: "ProductId",
                 as: "attributes",
-            },
-        },
-        {
-            $unwind: {
-                path: "$category",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-        {
-            $unwind: {
-                path: "$attributes",
-                preserveNullAndEmptyArrays: true,
             },
         },
         {
@@ -295,18 +277,6 @@ const getProductsByCategory = async (req, res) => {
                 localField: "ProductId",
                 foreignField: "ProductId",
                 as: "attributes",
-            },
-        },
-        {
-            $unwind: {
-                path: "$category",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-        {
-            $unwind: {
-                path: "$attributes",
-                preserveNullAndEmptyArrays: true,
             },
         },
         {
