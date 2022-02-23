@@ -26,9 +26,6 @@ const getAllProducts = async (req, res) => {
                 from: "categories",
                 localField: "CategoryId",
                 foreignField: "CategoryId",
-                pipeline: [
-                    { $match: condictionCategory }
-                ],
                 as: "category",
             },
         }, {
@@ -37,12 +34,6 @@ const getAllProducts = async (req, res) => {
                 localField: "ProductId",
                 foreignField: "ProductId",
                 as: "attributes",
-            },
-        },
-        {
-            $unwind: {
-                path: "$category",
-                preserveNullAndEmptyArrays: true,
             },
         },
         {
@@ -99,18 +90,6 @@ const getDetailProduct = async (req, res) => {
                 localField: "ProductId",
                 foreignField: "ProductId",
                 as: "attributes",
-            },
-        },
-        {
-            $unwind: {
-                path: "$category",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-        {
-            $unwind: {
-                path: "$attributes",
-                preserveNullAndEmptyArrays: true,
             },
         },
         {
@@ -275,6 +254,130 @@ const deleteAttribute = async (req, res) => {
     return responseSuccess(res, 301, "", "Attribute not found");
 }
 
+// get products by category
+const getProductsByCategory = async (req, res) => {
+    const { page, pageSize } = req.value.query;
+    const { categoryId } = req.params;
+    const productQuery = ProductModel.aggregate([
+        {
+            $match: {
+                CategoryId: parseInt(categoryId),
+            },
+        },
+        {
+            $lookup: {
+                from: "categories",
+                localField: "CategoryId",
+                foreignField: "CategoryId",
+                as: "category",
+            },
+        }, {
+            $lookup: {
+                from: "attributes",
+                localField: "ProductId",
+                foreignField: "ProductId",
+                as: "attributes",
+            },
+        },
+        {
+            $project: {
+                ProductId: 1,
+                ProductName: 1,
+                Price: { $toDouble: "$Price" },
+                Sizes: 1,
+                ProductImage: 1,
+                CategoryId: 1,
+                StorageQuantity: 1,
+                category: {
+                    CategoryId: 1,
+                    CategoryName: 1,
+                    CategoryDescription: 1,
+                    CategoryImage: 1,
+                },
+                attributes: {
+                    AttributeId: 1,
+                    AttributeName: 1,
+                    AttributeDescription: 1,
+                    AttributeImage: 1,
+                },
+            },
+        },
+    ]);
+
+    const products = await ProductModel.aggregatePaginate(productQuery, pageConfig(page, pageSize));
+    return responseSuccess(res, 200, "", products);
+}
+
+const getBestSellingProducts = async (req, res) => {
+    const { page, pageSize } = req.value.query;
+    const productQuery = ProductModel.aggregate([
+        {
+            $lookup: {
+                from: "categories",
+                localField: "CategoryId",
+                foreignField: "CategoryId",
+                as: "category",
+            },
+        },
+        {
+            $lookup: {
+                from: "attributes",
+                localField: "ProductId",
+                foreignField: "ProductId",
+                as: "attributes",
+            },
+        },
+        {
+            $lookup: {
+                from: "orderdetails",
+                localField: "ProductId",
+                foreignField: "ProductId",
+                as: "orderdetails",
+            },
+        },
+        {
+            $addFields: {
+                TotalSold: {
+                    $sum: "$orderdetails.Quantity",
+                },
+            }
+        },
+        {
+            $project: {
+                ProductId: 1,
+                ProductName: 1,
+                Price: { $toDouble: "$Price" },
+                Sizes: 1,
+                ProductImage: 1,
+                CategoryId: 1,
+                StorageQuantity: 1,
+                category: {
+                    CategoryId: 1,
+                    CategoryName: 1,
+                    CategoryDescription: 1,
+                    CategoryImage: 1,
+                },
+                attributes: {
+                    AttributeId: 1,
+                    AttributeName: 1,
+                    AttributeDescription: 1,
+                    AttributeImage: 1,
+                },
+                TotalSold: 1,
+            },
+        },
+        {
+            $sort: {
+                TotalSold: -1,
+            },
+        },
+    ]);
+
+    const products = await ProductModel.aggregatePaginate(productQuery, pageConfig(page, pageSize));
+    return responseSuccess(res, 200, "", products);
+}
+
+
 
 module.exports = {
     getAllProducts,
@@ -287,4 +390,6 @@ module.exports = {
     updateAttribute,
     getAttribute,
     deleteAttribute,
+    getProductsByCategory,
+    getBestSellingProducts,
 }

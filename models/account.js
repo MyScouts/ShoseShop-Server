@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const aggregatePaginate = require('mongoose-aggregate-paginate-v2');
+const bcrypt = require('bcryptjs')
+
 
 // Create Schema
 const accountSchema = new Schema({
@@ -11,8 +13,10 @@ const accountSchema = new Schema({
     },
     UserName: {
         type: String,
+        lowercase: true,
         required: true,
-        unique: true
+        unique: true,
+        trim: true
     },
     Password: {
         type: String,
@@ -25,6 +29,15 @@ const accountSchema = new Schema({
 }, {
     timestamps: true
 })
+
+accountSchema.methods.comparePassword = async function (candidatePassword) {
+    try {
+        return await bcrypt.compare(candidatePassword, this.Password);
+    } catch (error) {
+        throw new Error(error)
+    }
+};
+
 
 accountSchema.plugin(aggregatePaginate);
 const AccountModel = mongoose.model('accounts', accountSchema)

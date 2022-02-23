@@ -12,7 +12,6 @@ const feedbackSchema = new Schema({
         type: Number,
         required: true,
     },
-
     FeedbackName: {
         type: String,
     },
@@ -22,6 +21,8 @@ const feedbackSchema = new Schema({
     Grade: {
         type: Number,
     }
+},{
+    timestamps: true
 })
 
 feedbackSchema.plugin(aggregatePaginate);
