@@ -11,7 +11,6 @@ const favoriteProductSchema = new Schema({
     ProductId: {
         type: Number,
         required: true,
-        unique: true
     },
 }, {
     timestamps: true

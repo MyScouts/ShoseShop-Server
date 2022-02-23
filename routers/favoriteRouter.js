@@ -3,7 +3,8 @@ const passport = require('passport')
 const passportSetup = require('../middlewares/passport')
 const favoriteController = require('../controllers/favoriteController')
 const favoriteSchemas = require('../validators/favotite')
-const { validatorBody } = require('../validators')
+const { validatorBody, validatorQuery, baseSchema } = require('../validators')
+const isCustomer = require('../middlewares/isCustomer')
 
 
 // 
@@ -14,5 +15,13 @@ router.route('/')
         favoriteController.createOrDeleteFavorite
     )
 
+router.route('/my-favorites')
+    .get(
+        passport.authenticate('jwt', { session: false }),
+        isCustomer,
+        validatorQuery(baseSchema.page, 'page'),
+        validatorQuery(baseSchema.pageSize, 'pageSize'),
+        favoriteController.getMyFavorites
+    )
 
 module.exports = router
