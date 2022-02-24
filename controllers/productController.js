@@ -48,6 +48,8 @@ const getAllProducts = async (req, res) => {
                 ProductImage: 1,
                 CategoryId: 1,
                 StorageQuantity: 1,
+                ProductDescription: 1,
+                ProductStatus: 1,
                 category: {
                     CategoryId: 1,
                     CategoryName: 1,
@@ -101,6 +103,8 @@ const getDetailProduct = async (req, res) => {
                 ProductImage: 1,
                 CategoryId: 1,
                 StorageQuantity: 1,
+                ProductDescription: 1,
+                ProductStatus: 1,
                 category: {
                     CategoryId: 1,
                     CategoryName: 1,
@@ -125,7 +129,7 @@ const getDetailProduct = async (req, res) => {
 
 // create product
 const createProduct = async (req, res) => {
-    const { productName, price, sizes, categoryId, storageQuantity } = req.value.body;
+    const { productName, price, sizes, categoryId, storageQuantity, productDescription } = req.value.body;
     if (req.file) {
         const maxProduct = await ProductModel.find({}).sort({ ProductId: -1 }).limit(1)
         const product = await ProductModel.create({
@@ -136,6 +140,7 @@ const createProduct = async (req, res) => {
             ProductImage: converterServerToRealPath(req.file.path),
             CategoryId: categoryId,
             StorageQuantity: storageQuantity,
+            ProductDescription: productDescription,
         });
         return responseSuccess(res, 200, "", product);
     } else {
@@ -146,7 +151,7 @@ const createProduct = async (req, res) => {
 // update product
 const updateProduct = async (req, res) => {
     const { productId } = req.params;
-    const { productName, price, sizes, categoryId, storageQuantity } = req.value.body;
+    const { productName, price, sizes, categoryId, storageQuantity, productDescription } = req.value.body;
     const product = await ProductModel.findOne({ ProductId: parseInt(productId) });
 
     if (product) {
@@ -158,6 +163,7 @@ const updateProduct = async (req, res) => {
         product.Sizes = sizes;
         product.CategoryId = categoryId;
         product.StorageQuantity = storageQuantity;
+        product.ProductDescription = productDescription;
         await product.save();
         return responseSuccess(res, 200, "", product);
     }
@@ -288,6 +294,8 @@ const getProductsByCategory = async (req, res) => {
                 ProductImage: 1,
                 CategoryId: 1,
                 StorageQuantity: 1,
+                ProductDescription: 1,
+                ProductStatus: 1,
                 category: {
                     CategoryId: 1,
                     CategoryName: 1,
@@ -351,6 +359,8 @@ const getBestSellingProducts = async (req, res) => {
                 ProductImage: 1,
                 CategoryId: 1,
                 StorageQuantity: 1,
+                ProductDescription: 1,
+                ProductStatus: 1,
                 category: {
                     CategoryId: 1,
                     CategoryName: 1,

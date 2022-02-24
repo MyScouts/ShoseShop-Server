@@ -24,6 +24,14 @@ const productSchemas = {
             'number.integer': 'storageQuantity must be an integer',
             'number.required': 'storageQuantity is required',
         }),
+        productDescription: Joi.string().allow(''),
+        productStatus: Joi.number().integer().default(1).valid(0, 1).required().messages({
+            'number.base': 'productStatus must be an integer',
+            'number.integer': 'productStatus must be an integer',
+            'number.min': 'productStatus must be 0 or 1',
+            'number.max': 'productStatus must be 0 or 1',
+            'number.required': 'productStatus is required',
+        }),
     }),
 }
 

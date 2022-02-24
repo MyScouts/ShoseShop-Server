@@ -31,7 +31,15 @@ const productSchema = new Schema({
     StorageQuantity: {
         type: Number,
         required: true
-    }
+    },
+    ProductDescription: {
+        type: String,
+    },
+    ProductStatus: {
+        type: Number,
+        default: 1
+        // 0: stop selling  1: selling
+    },
 }, {
     timestamps: true
 })

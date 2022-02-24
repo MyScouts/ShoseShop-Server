@@ -8,7 +8,7 @@ const newOrder = async (req, res) => {
     const { customerName, customerPhone, items, shipToAddress } = req.value.body
 
     const productIds = items.map(item => item.productId)
-    const products = await ProductModel.find({ ProductId: { $in: productIds } })
+    const products = await ProductModel.find({ ProductId: { $in: productIds }, ProductStatus: 1 })
     if (products.length !== productIds.length) return responseSuccess(res, 301, "Invalid productIds");
 
     // check enough quantity
@@ -439,12 +439,12 @@ const updateOrderStatus = async (req, res) => {
     return responseSuccess(res, 200, "Update order status success", order)
 }
 
-    // Export module
-    module.exports = {
-        newOrder,
-        getMyOrders,
-        getMyOrderDetail,
-        getAllOrders,
-        getOrderDetail,
-        updateOrderStatus,
-    }
+// Export module
+module.exports = {
+    newOrder,
+    getMyOrders,
+    getMyOrderDetail,
+    getAllOrders,
+    getOrderDetail,
+    updateOrderStatus,
+}
