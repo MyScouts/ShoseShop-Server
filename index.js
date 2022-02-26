@@ -43,6 +43,6 @@ app.use((err, req, res, next) => {
 })
 
 // Start server
-app.listen(AppConfig.APP_PORT, () => {
+app.listen(AppConfig.APP_PORT || 5000, () => {
     console.log(`Server is running on port ${AppConfig.APP_PORT}`)
 })
