@@ -44,6 +44,6 @@ app.use((err, req, res, next) => {
 })
 
 // Start server
-app.listen(AppConfig.APP_PORT || 5000, () => {
+app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${AppConfig.APP_PORT}`)
 })
