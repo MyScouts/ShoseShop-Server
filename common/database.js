@@ -4,12 +4,14 @@ const MONGOOSE_URI = process.env.MONGOOSE_URI
 
 
 // Connect to MongoDB
-const DBConnection = async () => {
+const DBConnection = async() => {
     try {
+        // console.log(
         await mongooseClient.connect(MONGOOSE_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        })
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+            })
+            // )
         console.log("Mongoose connection is successfull!")
     } catch (error) {
         console.log("🚀 ~ file: app_database.js ~ line 9 ~ DBConnection ~ error", error)

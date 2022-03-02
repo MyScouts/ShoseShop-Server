@@ -1,7 +1,0 @@
-SERVER_PORT=5000
-
-# MONGOOSE
-MONGOOSE_URI=mongodb+srv://huyscouts:Nhungayhomqua123@cluster0.zhtrp.mongodb.net/ShoseShopDB?retryWrites=true&w=majority
-
-# WEBTOKEN
-PASSPORT_SECRET=df47638af9dc1bfaf223703b111ef3b504e03a309967936363a8db2f

@@ -17,6 +17,8 @@ const AppRouters = (app) => {
     app.use('/api/statictis', statictisRouter);
     app.use('/api/category', categoryRouter);
 
+    // console.log("%c index router catched error!", "background: #222; color: blue;");
+    // return
 }
 
 // Export module
