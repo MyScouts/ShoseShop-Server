@@ -49,12 +49,7 @@ const getAllProducts = async(req, res) => {
                 StorageQuantity: 1,
                 ProductDescription: 1,
                 ProductStatus: 1,
-                category: {
-                    CategoryId: 1,
-                    CategoryName: 1,
-                    CategoryDescription: 1,
-                    CategoryImage: 1,
-                },
+                category: { $arrayElemAt: ["$category", 0] },
                 attributes: {
                     AttributeId: 1,
                     AttributeName: 1,
@@ -103,12 +98,7 @@ const getDetailProduct = async(req, res) => {
                 StorageQuantity: 1,
                 ProductDescription: 1,
                 ProductStatus: 1,
-                category: {
-                    CategoryId: 1,
-                    CategoryName: 1,
-                    CategoryDescription: 1,
-                    CategoryImage: 1,
-                },
+                category: { $arrayElemAt: ["$category", 0] },
                 attributes: {
                     AttributeId: 1,
                     AttributeName: 1,
@@ -292,12 +282,7 @@ const getProductsByCategory = async(req, res) => {
                 StorageQuantity: 1,
                 ProductDescription: 1,
                 ProductStatus: 1,
-                category: {
-                    CategoryId: 1,
-                    CategoryName: 1,
-                    CategoryDescription: 1,
-                    CategoryImage: 1,
-                },
+                category: { $arrayElemAt: ["$category", 0] },
                 attributes: {
                     AttributeId: 1,
                     AttributeName: 1,
@@ -356,12 +341,7 @@ const getBestSellingProducts = async(req, res) => {
                 StorageQuantity: 1,
                 ProductDescription: 1,
                 ProductStatus: 1,
-                category: {
-                    CategoryId: 1,
-                    CategoryName: 1,
-                    CategoryDescription: 1,
-                    CategoryImage: 1,
-                },
+                category: { $arrayElemAt: ["$category", 0] },
                 attributes: {
                     AttributeId: 1,
                     AttributeName: 1,
