@@ -3,13 +3,17 @@ const AccountModel = require("../models/account");
 const AccountInfo = require("../models/accountInfo");
 const { convertStringToHash, encodedToken } = require("../utils/string");
 
-const managerCreate = async (req, res) => {
+const managerCreate = async(req, res) => {
     const { userName, password } = req.value.body;
 
     const findAccount = await AccountModel.findOne({ UserName: `${userName}`.toLowerCase() });
     if (findAccount) return responseSuccess(res, 301, "UserName is existed");
 
-    const accountId = await AccountModel.find().sort({ AccountId: -1 }).limit(1) ?? 0;
+    const accountList = await AccountModel.find().sort({ AccountId: -1 }).limit(1) ?? 0
+    const accountId = accountList[0].AccountId
+        // const accountId2 = Number(accountId + 1)
+    console.log("manager create accountId")
+    console.log(accountId)
     const newAccount = await AccountModel.create({
         AccountId: accountId + 1,
         UserName: userName,
@@ -20,7 +24,7 @@ const managerCreate = async (req, res) => {
 }
 
 
-const managerLogin = async (req, res) => {
+const managerLogin = async(req, res) => {
     const { userName, password } = req.value.body;
 
     const findAccount = await AccountModel.findOne({ UserName: `${userName}`.toLowerCase() });
@@ -34,7 +38,7 @@ const managerLogin = async (req, res) => {
 
 }
 
-const registerCustomer = async (req, res) => {
+const registerCustomer = async(req, res) => {
     const { userName, password, passwordConfirm, fullName, sex, email, phoneNumber, address } = req.value.body;
 
     const findAccount = await AccountModel.findOne({ UserName: `${userName}`.toLowerCase() });
@@ -62,7 +66,7 @@ const registerCustomer = async (req, res) => {
     return responseSuccess(res, 200, "Create Customer is successfully!")
 }
 
-const customerLogin = async (req, res) => {
+const customerLogin = async(req, res) => {
     const { userName, password } = req.value.body;
 
     const findAccount = await AccountModel.findOne({ UserName: `${userName}`.toLowerCase() });
@@ -77,7 +81,7 @@ const customerLogin = async (req, res) => {
     return responseSuccess(res, 200, "Login successfully!", { token, account: findAccount });
 }
 
-const updatePassword = async (req, res) => {
+const updatePassword = async(req, res) => {
     const { password, passwordConfirm, newPassword } = req.value.body;
     const { accountId } = req.user.AccountId;
 

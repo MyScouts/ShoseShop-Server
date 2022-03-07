@@ -4,7 +4,7 @@ const { validatorBody } = require('../validators')
 const authSchemas = require('../validators/auth')
 const passport = require('passport')
 const passportConfig = require('../middlewares/passport')
-// 
+    // 
 router.route('/manager/register')
     .post(
         validatorBody(authSchemas.createAccount),

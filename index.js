@@ -13,7 +13,7 @@ const corsOptions = {
 // 
 DBConnection()
 app.use(logger('dev'))
-// for parsing application/x-www-form-urlencoded
+    // for parsing application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 // for parsing multipart/form-data
 // app.use(upload.array());
@@ -43,6 +43,6 @@ app.use((err, req, res, next) => {
 })
 
 // Start server
-app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${AppConfig.APP_PORT}`)
+app.listen(process.env.PORT || AppConfig.APP_PORT, () => {
+    console.log(`Server is running on port ${AppConfig.APP_PORT || process.env.PORT}`)
 })

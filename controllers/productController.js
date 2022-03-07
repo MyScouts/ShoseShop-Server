@@ -4,7 +4,7 @@ const ProductModel = require("../models/product");
 const { converterServerToRealPath } = require("../utils/fileUpload");
 
 // Get all products
-const getAllProducts = async (req, res) => {
+const getAllProducts = async(req, res) => {
     const { page, pageSize, search } = req.value.query;
     let condition = {};
     let condictionCategory = {};
@@ -20,8 +20,7 @@ const getAllProducts = async (req, res) => {
         condictionCategory = { CategoryName: { $regex: `.*${search}.*`, $options: 'i' } }
     }
 
-    const productQuery = ProductModel.aggregate([
-        {
+    const productQuery = ProductModel.aggregate([{
             $lookup: {
                 from: "categories",
                 localField: "CategoryId",
@@ -66,10 +65,9 @@ const getAllProducts = async (req, res) => {
 }
 
 // Get detail product
-const getDetailProduct = async (req, res) => {
+const getDetailProduct = async(req, res) => {
     const { productId } = req.params;
-    const product = await ProductModel.aggregate([
-        {
+    const product = await ProductModel.aggregate([{
             $match: {
                 ProductId: parseInt(productId),
             },
@@ -118,7 +116,7 @@ const getDetailProduct = async (req, res) => {
 }
 
 // create product
-const createProduct = async (req, res) => {
+const createProduct = async(req, res) => {
     const { productName, price, sizes, categoryId, storageQuantity, productDescription } = req.value.body;
     if (req.file) {
         const maxProduct = await ProductModel.find({}).sort({ ProductId: -1 }).limit(1)
@@ -139,7 +137,7 @@ const createProduct = async (req, res) => {
 }
 
 // update product
-const updateProduct = async (req, res) => {
+const updateProduct = async(req, res) => {
     const { productId } = req.params;
     const { productName, price, sizes, categoryId, storageQuantity, productDescription } = req.value.body;
     const product = await ProductModel.findOne({ ProductId: parseInt(productId) });
@@ -161,7 +159,7 @@ const updateProduct = async (req, res) => {
 }
 
 // delete product
-const deleteProduct = async (req, res) => {
+const deleteProduct = async(req, res) => {
     const { productId } = req.params;
     const product = await ProductModel.findOne({ ProductId: parseInt(productId) });
     if (product) {
@@ -172,11 +170,10 @@ const deleteProduct = async (req, res) => {
 }
 
 // get attributes of product
-const getAttributes = async (req, res) => {
+const getAttributes = async(req, res) => {
     const { productId } = req.params;
 
-    const attributes = await AttributeModel.aggregate([
-        {
+    const attributes = await AttributeModel.aggregate([{
             $match: {
                 ProductId: parseInt(productId),
             },
@@ -194,7 +191,7 @@ const getAttributes = async (req, res) => {
 }
 
 // create attribute
-const createAttribute = async (req, res) => {
+const createAttribute = async(req, res) => {
     const { productId } = req.params;
     const { attributeName, attributeDescription } = req.value.body;
     if (req.file) {
@@ -213,7 +210,7 @@ const createAttribute = async (req, res) => {
 }
 
 // update attribute
-const updateAttribute = async (req, res) => {
+const updateAttribute = async(req, res) => {
     const { attributeId } = req.params;
     const { attributeName, attributeDescription } = req.value.body;
     const attribute = await AttributeModel.findOne({ AttributeId: parseInt(attributeId) });
@@ -230,7 +227,7 @@ const updateAttribute = async (req, res) => {
 }
 
 // get attribute detail
-const getAttribute = async (req, res) => {
+const getAttribute = async(req, res) => {
     const { attributeId } = req.params;
     const attribute = await AttributeModel.findOne({ AttributeId: parseInt(attributeId) });
     if (attribute) {
@@ -240,7 +237,7 @@ const getAttribute = async (req, res) => {
 }
 
 // delete attribute
-const deleteAttribute = async (req, res) => {
+const deleteAttribute = async(req, res) => {
     const { attributeId } = req.params;
     const attribute = await AttributeModel.findOne({ AttributeId: parseInt(attributeId) });
     if (attribute) {
@@ -251,11 +248,10 @@ const deleteAttribute = async (req, res) => {
 }
 
 // get products by category
-const getProductsByCategory = async (req, res) => {
+const getProductsByCategory = async(req, res) => {
     const { page, pageSize } = req.value.query;
     const { categoryId } = req.params;
-    const productQuery = ProductModel.aggregate([
-        {
+    const productQuery = ProductModel.aggregate([{
             $match: {
                 CategoryId: parseInt(categoryId),
             },
@@ -301,10 +297,9 @@ const getProductsByCategory = async (req, res) => {
     return responseSuccess(res, 200, "", products);
 }
 
-const getBestSellingProducts = async (req, res) => {
+const getBestSellingProducts = async(req, res) => {
     const { page, pageSize } = req.value.query;
-    const productQuery = ProductModel.aggregate([
-        {
+    const productQuery = ProductModel.aggregate([{
             $lookup: {
                 from: "categories",
                 localField: "CategoryId",
