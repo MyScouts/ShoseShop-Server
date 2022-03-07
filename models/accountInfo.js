@@ -9,21 +9,6 @@ const accountInfo = new Schema({
         required: true,
         unique: true
     },
-    // UserName: {
-    //     type: String,
-    //     required: true,
-    //     unique: true
-    // },
-    // Password: {
-    //     type: String,
-    //     required: true
-    // },
-    // FirstName: {
-    //     type: String,
-    // },
-    // LastName: {
-    //     type: String,
-    // },
     FullName: {
         type: String,
         required: true
