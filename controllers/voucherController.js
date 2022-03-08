@@ -9,7 +9,7 @@ const createVoucher = async (req, res) => {
     if (findVoucher) return responseSuccess(res, 301, "Voucher code is existed")
     const findProduct = await ProductModel.findOne({ ProductId: productId });
     if (!findProduct) return responseSuccess(res, 302, "Product is not existed")
-    const checkExistVoucher = await VoucherModel.findOne({ ProductId: productId, StartDate: { $lte: new Date() }, EndDate: { $qte: new Date() } });
+    const checkExistVoucher = await VoucherModel.findOne({ ProductId: productId, StartDate: { $lte: new Date() }, EndDate: { $gte: new Date() } });
     console.log("🚀 ~ file: voucherController.js ~ line 16 ~ createVoucher ~ checkExistVoucher", checkExistVoucher)
     if (checkExistVoucher) return responseSuccess(res, 303, "Product is existed voucher")
     const lastVoucher = await VoucherModel.findOne({}, { VoucherId: 1 }).sort({ VoucherId: -1 });
