@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node index.js",
+    "server": "nodemon index.js",
     "seed": "node seeds/index.js"
   },
   "dependencies": {
@@ -24,8 +25,5 @@
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0"
-  },
-  "devDependencies": {
-    
   }
 }

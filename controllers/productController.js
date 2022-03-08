@@ -35,6 +35,38 @@ const getAllProducts = async (req, res) => {
                 foreignField: "ProductId",
                 as: "attributes",
             },
+        }, {
+            $lookup: {
+                from: "vouchers",
+                let: { productId: "$ProductId" },
+                as: "vouchers",
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$ProductId", "$$productId"] },
+                                    { $gte: ["$Quantity", 1] },
+                                    { $gte: [new Date(), "$StartDate",] },
+                                    { $lte: [new Date(), "$EndDate"] },
+                                ],
+                            },
+                        },
+                    }, {
+                        $project: {
+                            _id: 0,
+                            ProductId: 1,
+                            VoucherId: 1,
+                            VoucherName: 1,
+                            VoucherDescription: 1,
+                            Quantity: 1,
+                            StartDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$StartDate", timezone: "Asia/Ho_Chi_Minh" } },
+                            EndDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$EndDate", timezone: "Asia/Ho_Chi_Minh" } },
+                            Discount_percentage: 1,
+                        }
+                    }
+                ],
+            }
         },
         {
             $match: condition,
@@ -51,6 +83,7 @@ const getAllProducts = async (req, res) => {
                 ProductDescription: 1,
                 ProductStatus: 1,
                 category: { $arrayElemAt: ["$category", 0] },
+                voucher: { $arrayElemAt: ["$vouchers", 0] },
                 attributes: {
                     AttributeId: 1,
                     AttributeName: 1,
@@ -68,6 +101,8 @@ const getAllProducts = async (req, res) => {
 // Get detail product
 const getDetailProduct = async (req, res) => {
     const { productId } = req.params;
+    const currentDate = new Date().toISOString();
+
     const product = await ProductModel.aggregate([
         {
             $match: {
@@ -90,6 +125,39 @@ const getDetailProduct = async (req, res) => {
             },
         },
         {
+            $lookup: {
+                from: "vouchers",
+                let: { productId: "$ProductId" },
+                as: "vouchers",
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$ProductId", "$$productId"] },
+                                    { $gte: ["$Quantity", 1] },
+                                    { $lte: ["$StartDate", new Date()] },
+                                    { $gte: ["$EndDate", new Date()] },
+                                ],
+                            },
+                        },
+                    }, {
+                        $project: {
+                            _id: 0,
+                            ProductId: 1,
+                            VoucherId: 1,
+                            VoucherName: 1,
+                            VoucherDescription: 1,
+                            Quantity: 1,
+                            StartDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$StartDate", timezone: "Asia/Ho_Chi_Minh" } },
+                            EndDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$EndDate", timezone: "Asia/Ho_Chi_Minh" } },
+                            Discount_percentage: 1,
+                        }
+                    }
+                ],
+            }
+        },
+        {
             $project: {
                 ProductId: 1,
                 ProductName: 1,
@@ -101,6 +169,7 @@ const getDetailProduct = async (req, res) => {
                 ProductDescription: 1,
                 ProductStatus: 1,
                 category: { $arrayElemAt: ["$category", 0] },
+                voucher: { $arrayElemAt: ["$vouchers", 0] },
                 attributes: {
                     AttributeId: 1,
                     AttributeName: 1,

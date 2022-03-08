@@ -1,7 +1,8 @@
-const { responseSuccess, pageConfig } = require("../common/app")
+const { responseSuccess, pageConfig, TIME_ZONE } = require("../common/app")
 const OrderModel = require("../models/order")
 const OrderDetailModel = require("../models/orderDetail")
 const ProductModel = require("../models/product")
+const VoucherModel = require("../models/voucher")
 
 const newOrder = async (req, res) => {
     const accountId = req.user.AccountId
@@ -29,14 +30,20 @@ const newOrder = async (req, res) => {
     })
 
     items.forEach(async (item) => {
+        const checkExistVoucher = await VoucherModel.findOne({ ProductId: item.productId, StartDate: { $lte: new Date() }, EndDate: { $gte: new Date() }, Quantity: { $gt: 0 } });
+        let priceEach = products.find(product => product.ProductId === item.productId).Price * item.quantity;
+        if (checkExistVoucher) {
+            priceEach = priceEach - (priceEach * checkExistVoucher.Discount_percentage / 100)
+            checkExistVoucher.Quantity = checkExistVoucher.Quantity - 1
+            await checkExistVoucher.save()
+        }
         await OrderDetailModel.create({
             OrderId: newOrder.OrderId,
             ProductId: item.productId,
             Quantity: item.quantity,
-            PriceEach: products.find(product => product.ProductId === item.productId).Price * item.quantity,
+            PriceEach: priceEach,
+            Discount: checkExistVoucher ? checkExistVoucher.Discount_percentage : 0,
         })
-
-
         // update product
         await ProductModel.updateOne({ ProductId: item.productId }, {
             $inc: { StorageQuantity: -item.quantity }
@@ -117,7 +124,7 @@ const getMyOrders = async (req, res) => {
         {
             $project: {
                 OrderId: 1,
-                OrderDate: 1,
+                OrderDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$OrderDate", timezone: TIME_ZONE } },
                 OrderStatus: 1,
                 CustomerName: 1,
                 CustomerPhone: 1,

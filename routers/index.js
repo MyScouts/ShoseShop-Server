@@ -6,6 +6,7 @@ const orderRouter = require('./orderRouter');
 const favoriteRouter = require('./favoriteRouter');
 const statictisRouter = require('./statictisRouter');
 const categoryRouter = require('./categoryRouter');
+const voucherRouter = require('./voucherRouter');
 // 
 const AppRouters = (app) => {
     app.use('/api/product', productRouter);
@@ -16,7 +17,7 @@ const AppRouters = (app) => {
     app.use('/api/favorite', favoriteRouter);
     app.use('/api/statictis', statictisRouter);
     app.use('/api/category', categoryRouter);
-
+    app.use('/api/voucher', voucherRouter);
 }
 
 // Export module
