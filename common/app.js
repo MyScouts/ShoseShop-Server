@@ -1,8 +1,8 @@
 require('dotenv').config()
 
-const APP_PORT = process.env.SERVER_PORT || 5000
+const APP_PORT = process.env.PORT || 5000
 const PASSPORT_SECRET = process.env.PASSPORT_SECRET || 'secret'
-
+const TIME_ZONE = "Asia/Ho_Chi_Minh";
 const CUSTOM_LABELS = {
     totalDocs: 'itemCount',
     docs: 'items',
@@ -41,5 +41,6 @@ module.exports = {
     pageConfig,
     responseSuccess,
     responseFail,
-    PASSPORT_SECRET
+    PASSPORT_SECRET,
+    TIME_ZONE
 }

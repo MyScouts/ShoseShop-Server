@@ -9,13 +9,9 @@ const managerCreate = async(req, res) => {
     const findAccount = await AccountModel.findOne({ UserName: `${userName}`.toLowerCase() });
     if (findAccount) return responseSuccess(res, 301, "UserName is existed");
 
-    const accountList = await AccountModel.find().sort({ AccountId: -1 }).limit(1) ?? 0
-    const accountId = accountList[0].AccountId
-        // const accountId2 = Number(accountId + 1)
-    console.log("manager create accountId")
-    console.log(accountId)
+    const accounts = await AccountModel.find().sort({ AccountId: -1 }).limit(1);
     const newAccount = await AccountModel.create({
-        AccountId: accountId + 1,
+        AccountId: accounts && accounts.length > 0 ? accounts[0].AccountId + 1 : 1,
         UserName: userName,
         Password: await convertStringToHash(password),
         RoleId: 1
