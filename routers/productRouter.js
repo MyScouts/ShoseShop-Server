@@ -27,8 +27,8 @@ router.route('/best-selling')
 
 router.route('/')
     .post(
-        passport.authenticate('jwt', { session: false }),
-        isManager,
+        // passport.authenticate('jwt', { session: false }),
+        // isManager,
         multer({ storage: storage, fileFilter: imageFilter }).single('productImage'),
         validatorBody(productSchemas.createProduct), productController.createProduct
     )
