@@ -15,6 +15,7 @@ router.route('/get-all')
         validatorQuery(baseSchema.page, "page"),
         validatorQuery(baseSchema.pageSize, "pageSize"),
         validatorQuery(baseSchema.search, "search"),
+        validatorQuery(baseSchema.search, "categoryId"),
         productController.getAllProducts
     )
 

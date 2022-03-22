@@ -69,7 +69,13 @@ const baseSchema = {
         query: Joi.string().allow('').allow(null).messages({
             'string.required': 'search is required',
         }),
-    })
+    }),
+
+    categoryId: Joi.object().keys({
+        query: Joi.string().allow('').allow(null).messages({
+            'string.required': 'categoryId is required',
+        }),
+    }),
 
 }
 

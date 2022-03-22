@@ -5,9 +5,12 @@ const { converterServerToRealPath } = require("../utils/fileUpload");
 
 // Get all products
 const getAllProducts = async (req, res) => {
-    const { page, pageSize, search } = req.value.query;
+    const { page, pageSize, search, categoryId } = req.value.query;
     let condition = {};
-    let condictionCategory = {};
+
+    if (categoryId && categoryId !== "") {
+        condition.CategoryId = parseInt(categoryId);
+    }
 
     if (search && search !== '') {
         condition = {
