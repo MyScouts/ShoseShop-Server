@@ -13,14 +13,8 @@ const getAllProducts = async (req, res) => {
     }
 
     if (search && search !== '') {
-        condition = {
-            $or: [
-                { ProductName: { $regex: new RegExp(`.*${search}.*`), $options: 'i' } },
-                // { Price: { $regex: new RegExp(search), $options: 'i' } },
-            ]
-
-        };
-        condictionCategory = { CategoryName: { $regex: `.*${search}.*`, $options: 'i' } }
+        condition.ProductName = { $regex: new RegExp(`.*${search}.*`), $options: 'i' }
+        // condictionCategory = { CategoryName: { $regex: `.*${search}.*`, $options: 'i' } }
     }
 
     const productQuery = ProductModel.aggregate([
