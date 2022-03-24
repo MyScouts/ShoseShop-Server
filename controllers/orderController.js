@@ -9,7 +9,9 @@ const newOrder = async (req, res) => {
     const { customerName, customerPhone, items, shipToAddress } = req.value.body
 
     const productIds = items.map(item => item.productId)
-    const products = await ProductModel.find({ ProductId: { $in: productIds }, ProductStatus: 1 })
+    console.log("🚀 ~ file: orderController.js ~ line 12 ~ newOrder ~ productIds", productIds)
+    const products = await ProductModel.find({ ProductId: { $in: productIds } })
+    console.log("🚀 ~ file: orderController.js ~ line 13 ~ newOrder ~ products", products)
     if (products.length !== productIds.length) return responseSuccess(res, 301, "Invalid productIds");
 
     // check enough quantity
