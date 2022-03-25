@@ -41,6 +41,9 @@ const newOrder = async (req, res) => {
             OrderId: newOrder.OrderId,
             ProductId: item.productId,
             Quantity: item.quantity,
+            Size: item.size,
+            Color: item.color,
+            Price: products.find(product => product.ProductId === item.productId).Price,
             PriceEach: priceEach,
             Discount: checkExistVoucher ? checkExistVoucher.Discount_percentage : 0,
         })

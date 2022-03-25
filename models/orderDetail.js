@@ -15,6 +15,18 @@ const orderDetailSchema = new Schema({
         type: Number,
         required: true,
     },
+    Size: {
+        type: Number,
+        required: true,
+    },
+    Color: {
+        type: String,
+        required: true,
+    },
+    Price: {
+        type: Number,
+        required: true,
+    },
     PriceEach: {
         type: Number,
         required: true,
