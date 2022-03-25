@@ -5,19 +5,16 @@ const { converterServerToRealPath } = require("../utils/fileUpload");
 
 // Get all products
 const getAllProducts = async (req, res) => {
-    const { page, pageSize, search } = req.value.query;
+    const { page, pageSize, search, categoryId } = req.value.query;
     let condition = {};
-    let condictionCategory = {};
+
+    if (categoryId && categoryId !== "") {
+        condition.CategoryId = parseInt(categoryId);
+    }
 
     if (search && search !== '') {
-        condition = {
-            $or: [
-                { ProductName: { $regex: new RegExp(`.*${search}.*`), $options: 'i' } },
-                // { Price: { $regex: new RegExp(search), $options: 'i' } },
-            ]
-
-        };
-        condictionCategory = { CategoryName: { $regex: `.*${search}.*`, $options: 'i' } }
+        condition.ProductName = { $regex: new RegExp(`.*${search}.*`), $options: 'i' }
+        // condictionCategory = { CategoryName: { $regex: `.*${search}.*`, $options: 'i' } }
     }
 
     const productQuery = ProductModel.aggregate([
