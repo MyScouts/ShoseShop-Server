@@ -9,9 +9,7 @@ const newOrder = async (req, res) => {
     const { customerName, customerPhone, items, shipToAddress } = req.value.body
 
     const productIds = items.map(item => item.productId)
-    console.log("🚀 ~ file: orderController.js ~ line 12 ~ newOrder ~ productIds", productIds)
     const products = await ProductModel.find({ ProductId: { $in: productIds } })
-    console.log("🚀 ~ file: orderController.js ~ line 13 ~ newOrder ~ products", products)
     if (products.length !== productIds.length) return responseSuccess(res, 301, "Invalid productIds");
 
     // check enough quantity
@@ -33,9 +31,7 @@ const newOrder = async (req, res) => {
 
     items.forEach(async (item) => {
         const checkExistVoucher = await VoucherModel.findOne({ ProductId: item.productId, StartDate: { $lte: new Date() }, EndDate: { $gte: new Date() }, Quantity: { $gt: 0 } });
-        let priceEach = products.find(product => product.ProductId === item.productId).Price * item.quantity;
         if (checkExistVoucher) {
-            priceEach = priceEach - (priceEach * checkExistVoucher.Discount_percentage / 100)
             checkExistVoucher.Quantity = checkExistVoucher.Quantity - 1
             await checkExistVoucher.save()
         }
@@ -46,8 +42,8 @@ const newOrder = async (req, res) => {
             Size: item.size,
             Color: item.color,
             Price: products.find(product => product.ProductId === item.productId).Price,
-            PriceEach: priceEach,
             Discount: checkExistVoucher ? checkExistVoucher.Discount_percentage : 0,
+            VoucherId: checkExistVoucher ? checkExistVoucher.VoucherId : 0
         })
         // update product
         await ProductModel.updateOne({ ProductId: item.productId }, {
@@ -118,17 +114,39 @@ const getMyOrders = async (req, res) => {
                                             CategoryDescription: 1,
                                         }
                                     }
-                                }
+                                },
+
                             ]
                         }
+                    }, {
+                        $lookup: {
+                            from: "vouchers",
+                            foreignField: "VoucherId",
+                            localField: "VoucherId",
+                            as: "vouchers"
+                        }
                     },
-
+                    {
+                        $project: {
+                            OrderId: 1,
+                            Quantity: 1,
+                            Size: 1,
+                            Color: 1,
+                            Price: 1,
+                            Discount: 1,
+                            Voucher: { $arrayElemAt: ["$vouchers", 0] },
+                            Total: { $sum: { $multiply: ["$Price", "$Quantity"] } },
+                            createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } },
+                            updatedAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } }
+                        }
+                    },
                 ]
             }
         },
         {
             $project: {
                 OrderId: 1,
+                CustomerId: 1,
                 OrderDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$OrderDate", timezone: TIME_ZONE } },
                 OrderStatus: 1,
                 CustomerName: 1,
@@ -141,7 +159,7 @@ const getMyOrders = async (req, res) => {
         {
             $addFields: {
                 Total: {
-                    $sum: "$orderDetails.PriceEach"
+                    $sum: "$orderDetails.Total"
                 }
             }
         },
@@ -217,8 +235,30 @@ const getMyOrderDetail = async (req, res) => {
                                             CategoryDescription: 1,
                                         }
                                     }
-                                }
+                                },
+
                             ]
+                        }
+                    }, {
+                        $lookup: {
+                            from: "vouchers",
+                            foreignField: "VoucherId",
+                            localField: "VoucherId",
+                            as: "vouchers"
+                        }
+                    },
+                    {
+                        $project: {
+                            OrderId: 1,
+                            Quantity: 1,
+                            Size: 1,
+                            Color: 1,
+                            Price: 1,
+                            Discount: 1,
+                            Voucher: { $arrayElemAt: ["$vouchers", 0] },
+                            Total: { $sum: { $multiply: ["$Price", "$Quantity"] } },
+                            createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } },
+                            updatedAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } }
                         }
                     },
                 ]
@@ -227,7 +267,8 @@ const getMyOrderDetail = async (req, res) => {
         {
             $project: {
                 OrderId: 1,
-                OrderDate: 1,
+                CustomerId: 1,
+                OrderDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$OrderDate", timezone: TIME_ZONE } },
                 OrderStatus: 1,
                 CustomerName: 1,
                 CustomerPhone: 1,
@@ -239,7 +280,7 @@ const getMyOrderDetail = async (req, res) => {
         {
             $addFields: {
                 Total: {
-                    $sum: "$orderDetails.PriceEach"
+                    $sum: "$orderDetails.Total"
                 }
             }
         },
@@ -306,18 +347,40 @@ const getAllOrders = async (req, res) => {
                                             CategoryDescription: 1,
                                         }
                                     }
-                                }
+                                },
+
                             ]
                         }
+                    }, {
+                        $lookup: {
+                            from: "vouchers",
+                            foreignField: "VoucherId",
+                            localField: "VoucherId",
+                            as: "vouchers"
+                        }
                     },
-
+                    {
+                        $project: {
+                            OrderId: 1,
+                            Quantity: 1,
+                            Size: 1,
+                            Color: 1,
+                            Price: 1,
+                            Discount: 1,
+                            Voucher: { $arrayElemAt: ["$vouchers", 0] },
+                            Total: { $sum: { $multiply: ["$Price", "$Quantity"] } },
+                            createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } },
+                            updatedAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } }
+                        }
+                    },
                 ]
             }
         },
         {
             $project: {
                 OrderId: 1,
-                OrderDate: 1,
+                CustomerId: 1,
+                OrderDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$OrderDate", timezone: TIME_ZONE } },
                 OrderStatus: 1,
                 CustomerName: 1,
                 CustomerPhone: 1,
@@ -329,7 +392,7 @@ const getAllOrders = async (req, res) => {
         {
             $addFields: {
                 Total: {
-                    $sum: "$orderDetails.PriceEach"
+                    $sum: "$orderDetails.Total"
                 }
             }
         },
@@ -404,8 +467,30 @@ const getOrderDetail = async (req, res) => {
                                             CategoryDescription: 1,
                                         }
                                     }
-                                }
+                                },
+
                             ]
+                        }
+                    }, {
+                        $lookup: {
+                            from: "vouchers",
+                            foreignField: "VoucherId",
+                            localField: "VoucherId",
+                            as: "vouchers"
+                        }
+                    },
+                    {
+                        $project: {
+                            OrderId: 1,
+                            Quantity: 1,
+                            Size: 1,
+                            Color: 1,
+                            Price: 1,
+                            Discount: 1,
+                            Voucher: { $arrayElemAt: ["$vouchers", 0] },
+                            Total: { $sum: { $multiply: ["$Price", "$Quantity"] } },
+                            createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } },
+                            updatedAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } }
                         }
                     },
                 ]
@@ -414,7 +499,8 @@ const getOrderDetail = async (req, res) => {
         {
             $project: {
                 OrderId: 1,
-                OrderDate: 1,
+                CustomerId: 1,
+                OrderDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$OrderDate", timezone: TIME_ZONE } },
                 OrderStatus: 1,
                 CustomerName: 1,
                 CustomerPhone: 1,
@@ -426,7 +512,7 @@ const getOrderDetail = async (req, res) => {
         {
             $addFields: {
                 Total: {
-                    $sum: "$orderDetails.PriceEach"
+                    $sum: "$orderDetails.Total"
                 }
             }
         },

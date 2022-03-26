@@ -27,14 +27,13 @@ const orderDetailSchema = new Schema({
         type: Number,
         required: true,
     },
-    PriceEach: {
-        type: Number,
-        required: true,
-    },
     Discount: {
         type: Number,
         default: 0,
     },
+    VoucherId:{
+        type: Number,
+    }
 }, {
     timestamps: true
 })
