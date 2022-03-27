@@ -16,6 +16,12 @@ const orderSchemas = {
             quantity: Joi.number().integer().required().messages({
                 'number.integer': 'Quantity must be an integer'
             }),
+            size: Joi.number().integer().required().messages({
+                'number.integer': 'Size must be an integer'
+            }),
+            color: Joi.string().required().messages({
+                'string.empty': 'Color is required'
+            })
         })).required().messages({
             'array.items.required': 'Items are required'
         }),

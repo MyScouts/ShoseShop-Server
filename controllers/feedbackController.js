@@ -1,4 +1,4 @@
-const { responseSuccess, pageConfig } = require("../common/app");
+const { responseSuccess, pageConfig, TIME_ZONE } = require("../common/app");
 const FeedbackModel = require("../models/feedback");
 
 
@@ -35,8 +35,8 @@ const getAllFeedbacks = async (req, res) => {
                 FeedbackName: 1,
                 FeedbackDescription: 1,
                 Grade: 1,
-                createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt" } },
-                updatedAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$updatedAt" } }
+                createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } },
+                updatedAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$updatedAt", timezone: TIME_ZONE } }
             },
         }
     ])

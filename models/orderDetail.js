@@ -15,7 +15,15 @@ const orderDetailSchema = new Schema({
         type: Number,
         required: true,
     },
-    PriceEach: {
+    Size: {
+        type: Number,
+        required: true,
+    },
+    Color: {
+        type: String,
+        required: true,
+    },
+    Price: {
         type: Number,
         required: true,
     },
@@ -23,6 +31,9 @@ const orderDetailSchema = new Schema({
         type: Number,
         default: 0,
     },
+    VoucherId:{
+        type: Number,
+    }
 }, {
     timestamps: true
 })
