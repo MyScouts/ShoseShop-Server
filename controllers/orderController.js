@@ -63,6 +63,13 @@ const getMyOrders = async (req, res) => {
             $match: {
                 CustomerId: accountId,
             }
+        }, {
+            $lookup: {
+                from: "customers",
+                foreignField: "AccountId",
+                localField: "CustomerId",
+                as: "customers"
+            }
         },
         {
             $lookup: {
@@ -149,11 +156,11 @@ const getMyOrders = async (req, res) => {
                 CustomerId: 1,
                 OrderDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$OrderDate", timezone: TIME_ZONE } },
                 OrderStatus: 1,
-                CustomerName: 1,
                 CustomerPhone: 1,
                 ShipToAddress: 1,
                 orderDetails: 1,
                 Status: 1,
+                CustomerName: { $arrayElemAt: ["$customers.FullName", 0] }
             }
         },
         {
@@ -187,116 +194,12 @@ const getMyOrderDetail = async (req, res) => {
         },
         {
             $lookup: {
-                from: "orderdetails",
-                as: "orderDetails",
-                let: { orderId: "$OrderId" },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: {
-                                $and: [
-                                    { $eq: ["$OrderId", "$$orderId"] },
-                                ]
-                            }
-                        }
-                    }, {
-                        $lookup: {
-                            from: "products",
-                            as: "product",
-                            let: { productId: "$ProductId" },
-                            pipeline: [
-                                {
-                                    $match: {
-                                        $expr: {
-                                            $and: [
-                                                { $eq: ["$ProductId", "$$productId"] },
-                                            ]
-                                        }
-                                    }
-                                }, {
-                                    $lookup: {
-                                        from: "categories",
-                                        foreignField: "CategoryId",
-                                        localField: "CategoryId",
-                                        as: "category"
-                                    }
-                                }, {
-                                    $project: {
-                                        _id: 0,
-                                        ProductId: 1,
-                                        ProductName: 1,
-                                        Price: { $toDouble: "$Price" },
-                                        Sizes: 1,
-                                        ProductImage: 1,
-                                        CategoryId: 1,
-                                        category: {
-                                            CategoryId: 1,
-                                            CategoryName: 1,
-                                            CategoryDescription: 1,
-                                        }
-                                    }
-                                },
-
-                            ]
-                        }
-                    }, {
-                        $lookup: {
-                            from: "vouchers",
-                            foreignField: "VoucherId",
-                            localField: "VoucherId",
-                            as: "vouchers"
-                        }
-                    },
-                    {
-                        $project: {
-                            OrderId: 1,
-                            Quantity: 1,
-                            Size: 1,
-                            Color: 1,
-                            Price: 1,
-                            Discount: 1,
-                            Voucher: { $arrayElemAt: ["$vouchers", 0] },
-                            Total: { $sum: { $multiply: ["$Price", "$Quantity"] } },
-                            createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } },
-                            updatedAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } }
-                        }
-                    },
-                ]
+                from: "customers",
+                foreignField: "AccountId",
+                localField: "CustomerId",
+                as: "customers"
             }
         },
-        {
-            $project: {
-                OrderId: 1,
-                CustomerId: 1,
-                OrderDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$OrderDate", timezone: TIME_ZONE } },
-                OrderStatus: 1,
-                CustomerName: 1,
-                CustomerPhone: 1,
-                ShipToAddress: 1,
-                orderDetails: 1,
-                Status: 1,
-            }
-        },
-        {
-            $addFields: {
-                Total: {
-                    $sum: "$orderDetails.Total"
-                }
-            }
-        },
-        {
-            $sort: {
-                OrderId: -1
-            }
-        }
-    ])
-
-    return responseSuccess(res, 200, "Get orders success", orders)
-}
-
-const getAllOrders = async (req, res) => {
-    const { page, pageSize } = req.value.query;
-    const orderQuery = OrderModel.aggregate([
         {
             $lookup: {
                 from: "orderdetails",
@@ -380,9 +283,129 @@ const getAllOrders = async (req, res) => {
             $project: {
                 OrderId: 1,
                 CustomerId: 1,
+                CustomerName: { $arrayElemAt: ["$customers.FullName", 0] },
                 OrderDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$OrderDate", timezone: TIME_ZONE } },
                 OrderStatus: 1,
-                CustomerName: 1,
+                CustomerPhone: 1,
+                ShipToAddress: 1,
+                orderDetails: 1,
+                Status: 1,
+            }
+        },
+        {
+            $addFields: {
+                Total: {
+                    $sum: "$orderDetails.Total"
+                }
+            }
+        },
+        {
+            $sort: {
+                OrderId: -1
+            }
+        }
+    ])
+
+    return responseSuccess(res, 200, "Get orders success", orders)
+}
+
+const getAllOrders = async (req, res) => {
+    const { page, pageSize } = req.value.query;
+    const orderQuery = OrderModel.aggregate([
+        {
+            $lookup: {
+                from: "customers",
+                foreignField: "AccountId",
+                localField: "CustomerId",
+                as: "customers"
+            }
+        },
+        {
+            $lookup: {
+                from: "orderdetails",
+                as: "orderDetails",
+                let: { orderId: "$OrderId" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$OrderId", "$$orderId"] },
+                                ]
+                            }
+                        }
+                    }, {
+                        $lookup: {
+                            from: "products",
+                            as: "product",
+                            let: { productId: "$ProductId" },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $and: [
+                                                { $eq: ["$ProductId", "$$productId"] },
+                                            ]
+                                        }
+                                    }
+                                }, {
+                                    $lookup: {
+                                        from: "categories",
+                                        foreignField: "CategoryId",
+                                        localField: "CategoryId",
+                                        as: "category"
+                                    }
+                                }, {
+                                    $project: {
+                                        _id: 0,
+                                        ProductId: 1,
+                                        ProductName: 1,
+                                        Price: { $toDouble: "$Price" },
+                                        Sizes: 1,
+                                        ProductImage: 1,
+                                        CategoryId: 1,
+                                        category: {
+                                            CategoryId: 1,
+                                            CategoryName: 1,
+                                            CategoryDescription: 1,
+                                        }
+                                    }
+                                },
+
+                            ]
+                        }
+                    }, {
+                        $lookup: {
+                            from: "vouchers",
+                            foreignField: "VoucherId",
+                            localField: "VoucherId",
+                            as: "vouchers"
+                        }
+                    },
+                    {
+                        $project: {
+                            OrderId: 1,
+                            Quantity: 1,
+                            Size: 1,
+                            Color: 1,
+                            Price: 1,
+                            Discount: 1,
+                            Voucher: { $arrayElemAt: ["$vouchers", 0] },
+                            Total: { $sum: { $multiply: ["$Price", "$Quantity"] } },
+                            createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } },
+                            updatedAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } }
+                        }
+                    },
+                ]
+            }
+        },
+        {
+            $project: {
+                OrderId: 1,
+                CustomerId: 1,
+                CustomerName: { $arrayElemAt: ["$customers.FullName", 0] },
+                OrderDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$OrderDate", timezone: TIME_ZONE } },
+                OrderStatus: 1,
                 CustomerPhone: 1,
                 ShipToAddress: 1,
                 orderDetails: 1,
@@ -419,6 +442,14 @@ const getOrderDetail = async (req, res) => {
         },
         {
             $lookup: {
+                from: "customers",
+                foreignField: "AccountId",
+                localField: "CustomerId",
+                as: "customers"
+            }
+        },
+        {
+            $lookup: {
                 from: "orderdetails",
                 as: "orderDetails",
                 let: { orderId: "$OrderId" },
@@ -502,7 +533,7 @@ const getOrderDetail = async (req, res) => {
                 CustomerId: 1,
                 OrderDate: { $dateToString: { format: "%d/%m/%Y %H:%M:%S", date: "$OrderDate", timezone: TIME_ZONE } },
                 OrderStatus: 1,
-                CustomerName: 1,
+                CustomerName: { $arrayElemAt: ["$customers.FullName", 0] },
                 CustomerPhone: 1,
                 ShipToAddress: 1,
                 orderDetails: 1,
