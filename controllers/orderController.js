@@ -57,6 +57,22 @@ const newOrder = async (req, res) => {
 
 
 const getMyOrders = async (req, res) => {
+    // req.writeHead = function(statusCode, reasonPhrase, headers) {
+    //     req.header('Content-Length', contentLength);
+    //     req.oldWriteHead(statusCode, reasonPhrase, headers);
+    // }
+    console.log("%d -----------------------------", "color:blue;")
+    // console.log(res.writeHead(headers))
+    res.oldWriteHead = res.writeHead;
+    res.writeHead = function(statusCode, reasonPhrase, headers) {
+        // res.header('Content-Length', 12);
+        res.header('transfer-encoding', ''); // <-- add this line
+        res.oldWriteHead(statusCode, reasonPhrase, headers);
+    }
+
+    req.header("transfer-encoding","")
+    // res.header("transfer-encoding","")
+    res.header("haha","haha")
     const accountId = req.user.AccountId
     const { page, pageSize } = req.value.query;
     const orderQuery = OrderModel.aggregate([
