@@ -54,7 +54,6 @@ const newOrder = async (req, res) => {
     return responseSuccess(res, 200, "Create order success", newOrder)
 }
 
-
 const getMyOrders = async (req, res) => {
     const accountId = req.user.AccountId
     const { page, pageSize } = req.value.query;
@@ -115,11 +114,7 @@ const getMyOrders = async (req, res) => {
                                         Sizes: 1,
                                         ProductImage: 1,
                                         CategoryId: 1,
-                                        category: {
-                                            CategoryId: 1,
-                                            CategoryName: 1,
-                                            CategoryDescription: 1,
-                                        }
+                                        Category: { $arrayElemAt: ["$category", 0] },
                                     }
                                 },
 
@@ -141,8 +136,16 @@ const getMyOrders = async (req, res) => {
                             Color: 1,
                             Price: 1,
                             Discount: 1,
+                            Product: { $arrayElemAt: ["$product", 0] },
                             Voucher: { $arrayElemAt: ["$vouchers", 0] },
-                            Total: { $sum: { $multiply: ["$Price", "$Quantity"] } },
+                            Total: {
+                                $toInt: {
+                                    $subtract: [
+                                        { $multiply: ["$Price", "$Quantity"] },
+                                        { $divide: [{ $sum: [{ $multiply: ["$Price", "$Quantity"] }, "$Discount"] }, 100] }
+                                    ]
+                                }
+                            },
                             createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } },
                             updatedAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } }
                         }
@@ -158,7 +161,7 @@ const getMyOrders = async (req, res) => {
                 OrderStatus: 1,
                 CustomerPhone: 1,
                 ShipToAddress: 1,
-                orderDetails: 1,
+                OrderDetails: "$orderDetails",
                 Status: 1,
                 CustomerName: { $arrayElemAt: ["$customers.FullName", 0] }
             }
@@ -166,7 +169,7 @@ const getMyOrders = async (req, res) => {
         {
             $addFields: {
                 Total: {
-                    $sum: "$orderDetails.Total"
+                    $sum: "$OrderDetails.Total"
                 }
             }
         },
@@ -201,6 +204,7 @@ const getMyOrderDetail = async (req, res) => {
             }
         },
         {
+
             $lookup: {
                 from: "orderdetails",
                 as: "orderDetails",
@@ -244,11 +248,7 @@ const getMyOrderDetail = async (req, res) => {
                                         Sizes: 1,
                                         ProductImage: 1,
                                         CategoryId: 1,
-                                        category: {
-                                            CategoryId: 1,
-                                            CategoryName: 1,
-                                            CategoryDescription: 1,
-                                        }
+                                        Category: { $arrayElemAt: ["$category", 0] },
                                     }
                                 },
 
@@ -270,8 +270,16 @@ const getMyOrderDetail = async (req, res) => {
                             Color: 1,
                             Price: 1,
                             Discount: 1,
+                            Product: { $arrayElemAt: ["$product", 0] },
                             Voucher: { $arrayElemAt: ["$vouchers", 0] },
-                            Total: { $sum: { $multiply: ["$Price", "$Quantity"] } },
+                            Total: {
+                                $toInt: {
+                                    $subtract: [
+                                        { $multiply: ["$Price", "$Quantity"] },
+                                        { $divide: [{ $sum: [{ $multiply: ["$Price", "$Quantity"] }, "$Discount"] }, 100] }
+                                    ]
+                                }
+                            },
                             createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } },
                             updatedAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } }
                         }
@@ -288,14 +296,14 @@ const getMyOrderDetail = async (req, res) => {
                 OrderStatus: 1,
                 CustomerPhone: 1,
                 ShipToAddress: 1,
-                orderDetails: 1,
+                OrderDetails: "$orderDetails",
                 Status: 1,
             }
         },
         {
             $addFields: {
                 Total: {
-                    $sum: "$orderDetails.Total"
+                    $sum: "$OrderDetails.Total"
                 }
             }
         },
@@ -306,7 +314,7 @@ const getMyOrderDetail = async (req, res) => {
         }
     ])
 
-    return responseSuccess(res, 200, "Get orders success", orders)
+    return responseSuccess(res, 200, "Get orders success", orders.length > 0 ? orders[0] : {})
 }
 
 const getAllOrders = async (req, res) => {
@@ -364,11 +372,7 @@ const getAllOrders = async (req, res) => {
                                         Sizes: 1,
                                         ProductImage: 1,
                                         CategoryId: 1,
-                                        category: {
-                                            CategoryId: 1,
-                                            CategoryName: 1,
-                                            CategoryDescription: 1,
-                                        }
+                                        Category: { $arrayElemAt: ["$category", 0] },
                                     }
                                 },
 
@@ -390,8 +394,16 @@ const getAllOrders = async (req, res) => {
                             Color: 1,
                             Price: 1,
                             Discount: 1,
+                            Product: { $arrayElemAt: ["$product", 0] },
                             Voucher: { $arrayElemAt: ["$vouchers", 0] },
-                            Total: { $sum: { $multiply: ["$Price", "$Quantity"] } },
+                            Total: {
+                                $toInt: {
+                                    $subtract: [
+                                        { $multiply: ["$Price", "$Quantity"] },
+                                        { $divide: [{ $sum: [{ $multiply: ["$Price", "$Quantity"] }, "$Discount"] }, 100] }
+                                    ]
+                                }
+                            },
                             createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } },
                             updatedAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } }
                         }
@@ -408,14 +420,14 @@ const getAllOrders = async (req, res) => {
                 OrderStatus: 1,
                 CustomerPhone: 1,
                 ShipToAddress: 1,
-                orderDetails: 1,
+                OrderDetails: "$orderDetails",
                 Status: 1,
             }
         },
         {
             $addFields: {
                 Total: {
-                    $sum: "$orderDetails.Total"
+                    $sum: "$OrderDetails.Total"
                 }
             }
         },
@@ -429,7 +441,6 @@ const getAllOrders = async (req, res) => {
     const orders = await OrderModel.aggregatePaginate(orderQuery, pageConfig(page, pageSize))
     return responseSuccess(res, 200, "Get orders success", orders)
 }
-
 
 const getOrderDetail = async (req, res) => {
     const { orderId } = req.params
@@ -492,11 +503,7 @@ const getOrderDetail = async (req, res) => {
                                         Sizes: 1,
                                         ProductImage: 1,
                                         CategoryId: 1,
-                                        category: {
-                                            CategoryId: 1,
-                                            CategoryName: 1,
-                                            CategoryDescription: 1,
-                                        }
+                                        Category: { $arrayElemAt: ["$category", 0] },
                                     }
                                 },
 
@@ -518,6 +525,7 @@ const getOrderDetail = async (req, res) => {
                             Color: 1,
                             Price: 1,
                             Discount: 1,
+                            Product: { $arrayElemAt: ["$product", 0] },
                             Voucher: { $arrayElemAt: ["$vouchers", 0] },
                             Total: { $sum: { $multiply: ["$Price", "$Quantity"] } },
                             createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt", timezone: TIME_ZONE } },
@@ -536,14 +544,14 @@ const getOrderDetail = async (req, res) => {
                 CustomerName: { $arrayElemAt: ["$customers.FullName", 0] },
                 CustomerPhone: 1,
                 ShipToAddress: 1,
-                orderDetails: 1,
+                OrderDetails: "$orderDetails",
                 Status: 1,
             }
         },
         {
             $addFields: {
                 Total: {
-                    $sum: "$orderDetails.Total"
+                    $sum: "$OrderDetails.Total"
                 }
             }
         },
