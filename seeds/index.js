@@ -24,12 +24,6 @@ async function seedDB() {
         console.log(err.stack);
         console.log("%c index seed catched error!", "background: #222; color: blue;");
     }
-    try {
-        await roleSeed()
-    } catch (err) {
-        console.log(err.stack);
-        console.log("%c index seed catched error!", "background: #222; color: blue;");
-    }
 }
 
 seedDB()

@@ -14,15 +14,15 @@ const categorySeed = async () => {
 
         const maxProduct = await ProductModel.find({}).sort({ ProductId: -1 }).limit(1)
         //
-        await new ProductModel({
-            ProductId: maxProduct !== null && maxProduct.length > 0 ? maxProduct[0].ProductId + 1 : 1,
-            ProductName: faker.commerce.productName(),
-            Price: faker.finance.amount(100, 1000, 2),
-            Sizes: arras[Math.floor(Math.random() * arras.length)],
-            ProductImage: faker.image.image(),
-            CategoryId: Math.floor(Math.random() * 20),
-            StorageQuantity: Math.floor(Math.random() * 5000)
-        }).save()
+        // await new ProductModel({
+        //     ProductId: maxProduct !== null && maxProduct.length > 0 ? maxProduct[0].ProductId + 1 : 1,
+        //     ProductName: faker.commerce.productName(),
+        //     Price: faker.finance.amount(100, 1000, 2),
+        //     Sizes: arras[Math.floor(Math.random() * arras.length)],
+        //     ProductImage: faker.image.image(),
+        //     CategoryId: Math.floor(Math.random() * 20),
+        //     StorageQuantity: Math.floor(Math.random() * 5000)
+        // }).save()
     }
 }
 
